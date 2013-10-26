@@ -1,5 +1,7 @@
 package hedonia;
 
+import org.apache.commons.lang3.StringUtils;
+
 import utilidades.ArchivoGrabacion;
 import utilidades.ArchivoLectura;
 
@@ -14,9 +16,9 @@ public class Hedonia {
 		ArchivoGrabacion archivoSalida = new ArchivoGrabacion("hedonia.out");
 		HedoniaParser parser = new HedoniaParser();
 		
-		archivoSalida.grabarLinea("****************************************");
-		archivoSalida.grabarLinea("Linea\tEntrada\t\tSalida");
-		archivoSalida.grabarLinea("****************************************");
+		archivoSalida.grabarLinea("************************************************************");
+		archivoSalida.grabarLinea("Linea\t" + StringUtils.rightPad("Entrada", 40) + "Salida");
+		archivoSalida.grabarLinea("************************************************************");
 		
 		int nroLinea = 0;
 		while (archivoEntrada.hayMasLineas())
@@ -25,15 +27,14 @@ public class Hedonia {
 			String linea = archivoEntrada.linea();
 			String retorno = "";
 			
-			if (parser.checkSentence(linea))
+			if (parser.checkLine(linea))
 				retorno = "YES";
 			else
 				retorno = "NO";
-			
-			archivoSalida.grabarLinea(nroLinea + "\t\t" + linea + "\t\t\t" + retorno);
+			archivoSalida.grabarLinea(nroLinea + "\t\t" + StringUtils.rightPad(linea, 40) + retorno);
 		}
 		
-		archivoSalida.grabarLinea("****************************************");
+		archivoSalida.grabarLinea("************************************************************");
 		archivoSalida.cerrar();
 
 	}	

@@ -1,5 +1,6 @@
 package hedonia;
 
+
 public class HedoniaParser
 {
 	private String _entrada;
@@ -50,6 +51,11 @@ public class HedoniaParser
 	{
 		return caracter != 'N';
 	}
+	
+	public boolean isAnN(char caracter)
+	{
+		return caracter == 'N';
+	}
 
 // VERIFICO SENTENCIAS
 	public boolean incorrectCharactersFound(String sentence)
@@ -61,66 +67,75 @@ public class HedoniaParser
 		return false;
 	}
 
-	public boolean oneCharSentence(String sentence)
+	public boolean checkLine(String line)
 	{
-		char firstChar = sentence.charAt(0);
-		return isAdmittedLowerChar(firstChar) || isAdmittedUpperChar(firstChar);
-	}	
+		// Si la línea está vacía
+		if (line.length() == 0)
+			return false;
+		
+		// Si se encuentra algún caracter no admitido
+		if (incorrectCharactersFound(line))
+			return false;
 	
-	public boolean twoCharsSentence(String sentence)
-	{
-		char firstChar = sentence.charAt(0);
-		char secondChar = sentence.charAt(1);
-		
-		// SI EL PRIMER CARACTER NO ES N SALGO
-		if (isNotAnN(firstChar))
+		// Si tiene un único caracter aunque sea una mayúsucula admitida es error
+		if (line.length() == 1 && isAdmittedUpperChar(line.charAt(0)))
 			return false;
 		
-		// SI EL SEGUNDO CARACTER NO ES UNA MINUSCULA ADMITIDA
-		if (!isAdmittedLowerChar(secondChar))
-			return false;
+		// Envío el analisis recursivo
+		int expected = 1;
+		if (recursiveCheck(line, expected) == 0)
+			return true;
 		
-		return true;
+		return false;
 	}
-
-	public boolean threeCharsSentence(String sentence)
+	
+	public int recursiveCheck(String line, int expected)
 	{
-		char firstChar = sentence.charAt(0);
-		char secondChar = sentence.charAt(1);
-		char thirdChar = sentence.charAt(2);
+		char character = line.charAt(0);
+		String restOfLine = "";
 		
-		if (isAdmittedUpperChar(firstChar) && isNotAnN(firstChar))
-		{
-			return isAdmittedLowerChar(secondChar) && isAdmittedLowerChar(thirdChar);
+		// Valido que existan más caracteres
+		if (line.length() > 1)
+			restOfLine = line.substring(1);
+		
+		// Valido que se espere al menos una sentencia
+		if (expected < 1)
+			return -1;
+		
+		// Si es una N sigo necesitando 1 sentencia, vuelvo a invocar el método
+		if (isAnN(character)) {
+			return recursiveCheck(line.substring(1), expected);
+		} else {
+			// Si es una de las demás mayúsculas admitidas, agrego +1 sentencia esperada
+			if (isAdmittedUpperChar(character)) {
+				return recursiveCheck(restOfLine, expected+1);
+			} else {
+				// Si es una minúscula admitida, cambio -1 sentencia esperada
+				// y si no es el final de la línea vuelvo a llamar al método
+				// de lo contrario vuelvo en la recursión.
+				if (isAdmittedLowerChar(character)) {
+					if (restOfLine.length() > 0)
+						return recursiveCheck(restOfLine, expected-1);
+					else
+						return expected-1;
+				} 
+			}
 		}
 		
-		return false;
+		return expected;
 	}
-
-	public boolean fourCharsSentence(String sentence)
-	{
-		char firstChar = sentence.charAt(0);
-		String threeCharsSentence = sentence.substring(1);
-		
-		if (isNotAnN(firstChar))
-			return false;
-		
-		return threeCharsSentence(threeCharsSentence);
-	}	
 	
-	public boolean checkSentence(String sentence)
-	{
-		if (incorrectCharactersFound(sentence))
-			return false;
-		if (sentence.length() == 1)
-			return oneCharSentence(sentence);
-		if (sentence.length() == 2)
-			return twoCharsSentence(sentence);
-		if (sentence.length() == 3)
-			return threeCharsSentence(sentence);
-		if (sentence.length() == 4)
-			return fourCharsSentence(sentence);
-		
-		return false;
-	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

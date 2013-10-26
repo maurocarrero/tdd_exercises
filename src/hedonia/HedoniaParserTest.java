@@ -270,6 +270,23 @@ public class HedoniaParserTest {
 		Assert.assertTrue(hedonia.isNotAnN('6'));
 	}
 	
+	@Test
+	public void isAnNTest()
+	{
+		HedoniaParser hedonia = new HedoniaParser();
+		Assert.assertTrue(hedonia.isAnN('N'));
+		
+		// FALSO
+		Assert.assertFalse(hedonia.isAnN('a'));
+		Assert.assertFalse(hedonia.isAnN('p'));
+		Assert.assertFalse(hedonia.isAnN('t'));
+		Assert.assertFalse(hedonia.isAnN('z'));
+		Assert.assertFalse(hedonia.isAnN('Z'));
+		Assert.assertFalse(hedonia.isAnN('T'));
+		Assert.assertFalse(hedonia.isAnN('.'));
+		Assert.assertFalse(hedonia.isAnN('6'));
+	}
+	
 // TEST CARACTERES INCORRECTOS EN UNA SENTENCIA
 	
 	@Test
@@ -294,17 +311,34 @@ public class HedoniaParserTest {
 // TEST SENTENCIAS
 	
 	@Test
+	public void recursiveCheckTest()
+	{
+		HedoniaParser hedonia = new HedoniaParser();
+		
+		Assert.assertEquals(0, hedonia.recursiveCheck("s", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("Ns", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("NNNNNNNNs", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("Css", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("NCss", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("CNCsss", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("CCCCCssssss", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("CCNCssNCssCNCssNCss", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("CNIzzNEzx", 1));
+		Assert.assertEquals(0, hedonia.recursiveCheck("ENCpqNCrs", 1));		
+	}
+	
+	@Test
 	public void oneCharSentenceTest()
 	{
 		HedoniaParser hedonia = new HedoniaParser();
 		// TRUE
-		Assert.assertTrue(hedonia.oneCharSentence("p"));
-		Assert.assertTrue(hedonia.oneCharSentence("t"));
-		Assert.assertTrue(hedonia.oneCharSentence("z"));
+		Assert.assertTrue(hedonia.checkLine("p"));
+		Assert.assertTrue(hedonia.checkLine("t"));
+		Assert.assertTrue(hedonia.checkLine("z"));
 		// FALSE
-		Assert.assertFalse(hedonia.oneCharSentence("1"));
-		Assert.assertFalse(hedonia.oneCharSentence("#"));
-		Assert.assertFalse(hedonia.oneCharSentence("a"));
+		Assert.assertFalse(hedonia.checkLine("1"));
+		Assert.assertFalse(hedonia.checkLine("#"));
+		Assert.assertFalse(hedonia.checkLine("a"));
 	}
 	
 	@Test
@@ -312,13 +346,13 @@ public class HedoniaParserTest {
 	{
 		HedoniaParser hedonia = new HedoniaParser();
 		// TRUE
-		Assert.assertTrue(hedonia.twoCharsSentence("Np"));
-		Assert.assertTrue(hedonia.twoCharsSentence("Nt"));
-		Assert.assertTrue(hedonia.twoCharsSentence("Nz"));
+		Assert.assertTrue(hedonia.checkLine("Np"));
+		Assert.assertTrue(hedonia.checkLine("Nt"));
+		Assert.assertTrue(hedonia.checkLine("Nz"));
 		// FALSE
-		Assert.assertFalse(hedonia.twoCharsSentence("N6"));
-		Assert.assertFalse(hedonia.twoCharsSentence("Na"));
-		Assert.assertFalse(hedonia.twoCharsSentence("Cp"));
+		Assert.assertFalse(hedonia.checkLine("N6"));
+		Assert.assertFalse(hedonia.checkLine("Na"));
+		Assert.assertFalse(hedonia.checkLine("Cp"));
 	}
 	
 	@Test
@@ -327,16 +361,16 @@ public class HedoniaParserTest {
 		HedoniaParser hedonia = new HedoniaParser();
 		
 		// TRUE
-		Assert.assertTrue(hedonia.checkSentence("Isz"));
-		Assert.assertTrue(hedonia.checkSentence("Dpt"));
-		Assert.assertTrue(hedonia.checkSentence("Ezx"));
-		Assert.assertTrue(hedonia.checkSentence("Izz"));
+		Assert.assertTrue(hedonia.checkLine("Isz"));
+		Assert.assertTrue(hedonia.checkLine("Dpt"));
+		Assert.assertTrue(hedonia.checkLine("Ezx"));
+		Assert.assertTrue(hedonia.checkLine("Izz"));
 		
 		// FALSE
-		Assert.assertFalse(hedonia.checkSentence("ptz"));
-		Assert.assertFalse(hedonia.checkSentence("qpq"));
-		Assert.assertFalse(hedonia.checkSentence("NNa"));
-		Assert.assertFalse(hedonia.checkSentence("NaP"));
+		Assert.assertFalse(hedonia.checkLine("ptz"));
+		Assert.assertFalse(hedonia.checkLine("qpq"));
+		Assert.assertFalse(hedonia.checkLine("NNa"));
+		Assert.assertFalse(hedonia.checkLine("NaP"));
 	}
 	
 	@Test
@@ -345,39 +379,64 @@ public class HedoniaParserTest {
 		HedoniaParser hedonia = new HedoniaParser();
 		
 		// TRUE
-		Assert.assertTrue(hedonia.checkSentence("NIsz"));
-		Assert.assertTrue(hedonia.checkSentence("NDpt"));
-		Assert.assertTrue(hedonia.checkSentence("NEzx"));
-		Assert.assertTrue(hedonia.checkSentence("NIzz"));
+		Assert.assertTrue(hedonia.checkLine("NIsz"));
+		Assert.assertTrue(hedonia.checkLine("NDpt"));
+		Assert.assertTrue(hedonia.checkLine("NEzx"));
+		Assert.assertTrue(hedonia.checkLine("NIzz"));
+		Assert.assertTrue(hedonia.checkLine("INpt"));		
 		
 		// FALSE
-		Assert.assertFalse(hedonia.checkSentence("Cptz"));
-		Assert.assertFalse(hedonia.checkSentence("vptz"));
-		Assert.assertFalse(hedonia.checkSentence("Nqpq"));
-		Assert.assertFalse(hedonia.checkSentence("INpt"));
+		Assert.assertFalse(hedonia.checkLine("Cptz"));
+		Assert.assertFalse(hedonia.checkLine("vptz"));
+		Assert.assertFalse(hedonia.checkLine("Nqpq"));
 	}
 
 	@Test
-	public void checkSentence()
+	public void checkLineTest()
 	{
 		HedoniaParser hedonia = new HedoniaParser();
 		
 		// TRUE
-		Assert.assertTrue(hedonia.checkSentence("y"));
-		Assert.assertTrue(hedonia.checkSentence("Np"));
-		Assert.assertTrue(hedonia.checkSentence("Nt"));
-		Assert.assertTrue(hedonia.checkSentence("Ezx"));
-		Assert.assertTrue(hedonia.checkSentence("Izz"));
-		Assert.assertTrue(hedonia.checkSentence("NEzx"));
-		Assert.assertTrue(hedonia.checkSentence("NIzz"));		
+
+		Assert.assertTrue(hedonia.checkLine("y"));
+		Assert.assertTrue(hedonia.checkLine("Np"));
+		Assert.assertTrue(hedonia.checkLine("Nt"));
+		Assert.assertTrue(hedonia.checkLine("Ezx"));
+		Assert.assertTrue(hedonia.checkLine("Izz"));
+		Assert.assertTrue(hedonia.checkLine("NEzx"));
+		Assert.assertTrue(hedonia.checkLine("NIzz"));
+		Assert.assertTrue(hedonia.checkLine("CNIzzNEzx"));
+		Assert.assertTrue(hedonia.checkLine("ENCpqNCrs"));
+		Assert.assertTrue(hedonia.checkLine("CDCssCsss"));
+		Assert.assertTrue(hedonia.checkLine("NNNCCstCst"));
+		Assert.assertTrue(hedonia.checkLine("CCNCrrNCrrCNCrrNCrr"));
+		Assert.assertTrue(hedonia.checkLine("NNs"));
+		Assert.assertTrue(hedonia.checkLine("CNpp"));
+		Assert.assertTrue(hedonia.checkLine("CNNNNNNNpNNNNNNp"));
+		Assert.assertTrue(hedonia.checkLine("NNNNNNNNNNNNNNNNNNs"));
+
 
 		// FALSE
-		Assert.assertFalse(hedonia.checkSentence("*"));
-		Assert.assertFalse(hedonia.checkSentence("N6"));
-		Assert.assertFalse(hedonia.checkSentence("Na"));
-		Assert.assertFalse(hedonia.checkSentence("ptz"));
-		Assert.assertFalse(hedonia.checkSentence("qpq"));
-		Assert.assertFalse(hedonia.checkSentence("Cptz"));
-		Assert.assertFalse(hedonia.checkSentence("vptz"));
+		Assert.assertFalse(hedonia.checkLine("*"));
+		Assert.assertFalse(hedonia.checkLine("/"));
+		Assert.assertFalse(hedonia.checkLine("C"));
+		Assert.assertFalse(hedonia.checkLine("N"));
+		Assert.assertFalse(hedonia.checkLine("D"));
+		Assert.assertFalse(hedonia.checkLine("I"));
+		Assert.assertFalse(hedonia.checkLine("N6"));
+		Assert.assertFalse(hedonia.checkLine("Na"));
+		Assert.assertFalse(hedonia.checkLine("CssN"));
+		Assert.assertFalse(hedonia.checkLine("NNNCCstCstN"));
+		Assert.assertFalse(hedonia.checkLine("sN"));
+		Assert.assertFalse(hedonia.checkLine("NNsN"));
+		Assert.assertFalse(hedonia.checkLine("ptz"));
+		Assert.assertFalse(hedonia.checkLine("qpq"));
+		Assert.assertFalse(hedonia.checkLine("Cptz"));
+		Assert.assertFalse(hedonia.checkLine("vptz"));
+		Assert.assertFalse(hedonia.checkLine("CNNNNNNNNNNNNNNp"));
+		Assert.assertFalse(hedonia.checkLine("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNss"));
+		Assert.assertFalse(hedonia.checkLine("CstN"));
+		Assert.assertFalse(hedonia.checkLine("DCsCst"));
+		Assert.assertFalse(hedonia.checkLine("CstCst"));
 	}
 }
